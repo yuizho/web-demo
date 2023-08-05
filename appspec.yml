@@ -3,3 +3,7 @@ os: linux
 files:
   - source: ./web-demo-0.0.1-SNAPSHOT.jar
     destination: /opt/app
+hooks:
+  ApplicationStart:
+    - location: tomcat_restart.sh
+      timeout: 300
