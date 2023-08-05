@@ -1,13 +1,13 @@
 package dev.yuizho.webdemo.controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class HelloController {
     @RequestMapping("hello")
-    public String hello() {
-        var serverName = System.getProperty("server_name");
-        return "Hello!! I'm working on " + (serverName != null ? serverName : "Anonymous");
+    public String hello(HttpServletRequest request) {
+        return "Hello!! I'm working on " + request.getLocalName();
     }
 }

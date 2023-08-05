@@ -1,7 +1,7 @@
 # web-demo
 
 ```sh
-$ java -Dname=local-server -jar target/web-demo-0.0.1-SNAPSHOT.jar
+$ java -jar target/web-demo-0.0.1-SNAPSHOT.jar
 ```
 
 ```sh
