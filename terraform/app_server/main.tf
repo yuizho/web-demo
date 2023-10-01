@@ -2,7 +2,7 @@ variable "instance_type" {}
 variable "public_key_path" {}
 
 locals {
-  instance_ami = "ami-08e19d3f2c031d439"
+  instance_ami = "ami-0f221f1525c20b777"
 }
 
 resource "aws_key_pair" "app_server_ssh_public_key" {
