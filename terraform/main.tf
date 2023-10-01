@@ -1,3 +1,7 @@
+provider "aws" {
+  region = "ap-northeast-1"
+}
+
 locals {
   instance_ami = "ami-08e19d3f2c031d439"
   instance_type = "t2.micro"
