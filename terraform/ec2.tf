@@ -1,6 +1,3 @@
-variable "instance_type" {}
-variable "public_key_path" {}
-
 locals {
   instance_ami = "ami-0f221f1525c20b777"
 }
