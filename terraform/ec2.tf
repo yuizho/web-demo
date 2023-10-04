@@ -7,7 +7,7 @@ resource "aws_key_pair" "app_server_ssh_public_key" {
   public_key = file(var.public_key_path)
 }
 
-resource "aws_instance" "app_server_ec2" {
+resource "aws_instance" "app_server_0" {
   ami           = local.instance_ami
   instance_type = var.instance_type
   key_name = aws_key_pair.app_server_ssh_public_key.id
@@ -18,7 +18,7 @@ resource "aws_instance" "app_server_ec2" {
   subnet_id = aws_subnet.public_0.id
 
   tags = {
-    Name = "example"
+    Name = "app-server-0"
   }
 }
 
