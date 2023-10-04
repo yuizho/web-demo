@@ -46,27 +46,26 @@ resource "aws_route_table_association" "public_1" {
 }
 
 # セキュリティグループ
-resource "aws_security_group" "app" {
-  name = "app_security_group"
+module "ssh_sg" {
+  source      = "./security_group"
+  name        = "ssh-sg"
+  vpc_id      = aws_vpc.app.id
+  port        = 22
+  cidr_blocks = ["0.0.0.0/0"]
+}
 
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+module "tomcat_sg" {
+  source      = "./security_group"
+  name        = "tomcat-sg"
+  vpc_id      = aws_vpc.app.id
+  port        = 8080
+  cidr_blocks = ["0.0.0.0/0"]
+}
 
-  ingress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+module "http_sg" {
+  source      = "./security_group"
+  name        = "http-sg"
+  vpc_id      = aws_vpc.app.id
+  port        = 80
+  cidr_blocks = ["0.0.0.0/0"]
 }
