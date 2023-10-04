@@ -54,12 +54,12 @@ module "ssh_sg" {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-module "tomcat_sg" {
+module "tomcat_internal_sg" {
   source      = "./security_group"
-  name        = "tomcat-sg"
+  name        = "tomcat-internal-sg"
   vpc_id      = aws_vpc.app.id
   port        = 8080
-  cidr_blocks = ["0.0.0.0/0"]
+  source_security_group_id = module.http_sg.security_group_id
 }
 
 module "http_sg" {

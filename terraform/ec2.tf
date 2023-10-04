@@ -13,7 +13,7 @@ resource "aws_instance" "app_server_ec2" {
   key_name = aws_key_pair.app_server_ssh_public_key.id
   vpc_security_group_ids = [
     module.ssh_sg.security_group_id,
-    module.tomcat_sg.security_group_id
+    module.tomcat_internal_sg.security_group_id
   ]
   subnet_id = aws_subnet.public_0.id
 
