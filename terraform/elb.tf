@@ -43,7 +43,12 @@ resource "aws_lb_target_group" "app_tg" {
 
 resource "aws_lb_target_group_attachment" "app_tg_attachment_0" {
   target_group_arn = aws_lb_target_group.app_tg.arn
-  target_id        = aws_instance.app_server_0.id
+  target_id        = aws_instance.app_server_ec2_0.id
+}
+
+resource "aws_lb_target_group_attachment" "app_tg_attachment_1" {
+  target_group_arn = aws_lb_target_group.app_tg.arn
+  target_id        = aws_instance.app_server_ec2_1.id
 }
 
 resource "aws_lb_listener" "app_lb_listener" {
