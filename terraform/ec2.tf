@@ -15,7 +15,7 @@ resource "aws_instance" "app_server_0" {
     module.ssh_sg.security_group_id,
     module.tomcat_internal_sg.security_group_id
   ]
-  subnet_id = aws_subnet.public_0.id
+  subnet_id = aws_subnet.app_subnet_public_0.id
 
   tags = {
     Name = "app-server-0"

@@ -6,8 +6,8 @@ resource "aws_lb" "app_alb" {
   enable_deletion_protection = false
 
   subnets = [
-    aws_subnet.public_0.id,
-    aws_subnet.public_1.id,
+    aws_subnet.app_subnet_public_0.id,
+    aws_subnet.app_subnet_public_1.id,
   ]
 
   security_groups = [
@@ -21,7 +21,7 @@ output "alb_dns_name" {
 
 resource "aws_lb_target_group" "app_tg" {
   name                 = "app-tg"
-  vpc_id               = aws_vpc.app.id
+  vpc_id               = aws_vpc.app_vpc.id
   target_type          = "instance"
   port                 = 8080
   protocol             = "HTTP"
@@ -41,7 +41,7 @@ resource "aws_lb_target_group" "app_tg" {
   depends_on = [aws_lb.app_alb]
 }
 
-resource "aws_lb_target_group_attachment" "app_tg_0" {
+resource "aws_lb_target_group_attachment" "app_tg_attachment_0" {
   target_group_arn = aws_lb_target_group.app_tg.arn
   target_id        = aws_instance.app_server_0.id
 }
