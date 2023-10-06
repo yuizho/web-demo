@@ -10,7 +10,7 @@ resource "aws_subnet" "app_subnet_public" {
   vpc_id                  = aws_vpc.app_vpc.id
   cidr_block              = "10.0.1${count.index}.0/24"
   map_public_ip_on_launch = true
-  availability_zone       = count.index % 2 == 0 ? "ap-northeast-1a" : "ap-northeast-1c"
+  availability_zone       = "ap-northeast-1${count.index % 2 == 0 ? "a" : "c"}"
 }
 
 # インターネットゲートウェイ
