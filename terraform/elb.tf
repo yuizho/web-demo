@@ -11,7 +11,7 @@ resource "aws_lb" "app_alb" {
   ]
 
   security_groups = [
-    module.http_sg.security_group_id
+    module.alb_sg.security_group_id
   ]
 }
 

@@ -49,12 +49,12 @@ module "tomcat_internal_sg" {
   name        = "tomcat-internal-sg"
   vpc_id      = aws_vpc.app_vpc.id
   port        = 8080
-  source_security_group_id = module.http_sg.security_group_id
+  source_security_group_id = module.alb_sg.security_group_id
 }
 
-module "http_sg" {
+module "alb_sg" {
   source      = "./security_group"
-  name        = "http-sg"
+  name        = "alb-sg"
   vpc_id      = aws_vpc.app_vpc.id
   port        = 80
   cidr_blocks = ["0.0.0.0/0"]
