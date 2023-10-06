@@ -6,8 +6,8 @@ resource "aws_lb" "app_alb" {
   enable_deletion_protection = false
 
   subnets = [
-    aws_subnet.app_subnet_public_0.id,
-    aws_subnet.app_subnet_public_1.id,
+    aws_subnet.app_subnet_public[0].id,
+    aws_subnet.app_subnet_public[1].id,
   ]
 
   security_groups = [
@@ -42,13 +42,9 @@ resource "aws_lb_target_group" "app_tg" {
 }
 
 resource "aws_lb_target_group_attachment" "app_tg_attachment_0" {
+  count = 4
   target_group_arn = aws_lb_target_group.app_tg.arn
-  target_id        = aws_instance.app_server_ec2_0.id
-}
-
-resource "aws_lb_target_group_attachment" "app_tg_attachment_1" {
-  target_group_arn = aws_lb_target_group.app_tg.arn
-  target_id        = aws_instance.app_server_ec2_1.id
+  target_id        = aws_instance.app_server_ec2[count.index].id
 }
 
 resource "aws_lb_listener" "app_lb_listener" {
