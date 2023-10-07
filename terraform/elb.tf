@@ -3,6 +3,9 @@ resource "aws_lb" "app_alb" {
   load_balancer_type         = "application"
   internal                   = false
   idle_timeout               = 60
+  # FIXME:
+  # ご操作によるALB削除防止のため、本番運用ではtrueにするのが良いと思う
+  # destroy前にfalseにする必要があるので、ガシガシdestroyする場合はfalseが良いと思う
   enable_deletion_protection = false
 
   subnets = [ for value in var.public_subnets : aws_subnet.app_subnet_public[value.az].id ]
