@@ -1,6 +1,9 @@
 variable "name" {}
 variable "vpc_id" {}
-variable "port" {}
+variable "ports" {
+  type = list(string)
+  default = null
+}
 variable "cidr_blocks" {
   type = list(string)
   default = null
@@ -15,9 +18,10 @@ resource "aws_security_group" "default" {
 }
 
 resource "aws_security_group_rule" "ingress" {
+  for_each = toset(var.ports)
   type              = "ingress"
-  from_port         = var.port
-  to_port           = var.port
+  from_port         = each.key
+  to_port           = each.key
   protocol          = "tcp"
   cidr_blocks       = var.cidr_blocks
   security_group_id = aws_security_group.default.id

@@ -40,7 +40,7 @@ module "ssh_sg" {
   source      = "./security_group"
   name        = "ssh-sg"
   vpc_id      = aws_vpc.app_vpc.id
-  port        = 22
+  ports       = [22]
   cidr_blocks = ["0.0.0.0/0"]
 }
 
@@ -48,7 +48,7 @@ module "tomcat_internal_sg" {
   source      = "./security_group"
   name        = "tomcat-internal-sg"
   vpc_id      = aws_vpc.app_vpc.id
-  port        = 8080
+  ports       = [8080]
   source_security_group_id = module.alb_sg.security_group_id
 }
 
@@ -56,6 +56,6 @@ module "alb_sg" {
   source      = "./security_group"
   name        = "alb-sg"
   vpc_id      = aws_vpc.app_vpc.id
-  port        = 80
+  ports       = [80, 443]
   cidr_blocks = ["0.0.0.0/0"]
 }

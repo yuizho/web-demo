@@ -46,8 +46,10 @@ resource "aws_lb_target_group_attachment" "app_tg_attachment" {
 
 resource "aws_lb_listener" "app_lb_listener" {
   load_balancer_arn = aws_lb.app_alb.arn
-  port              = "80"
-  protocol          = "HTTP"
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+  certificate_arn   = data.aws_acm_certificate.app_acm_certificate.arn
 
   default_action {
     type             = "forward"
@@ -55,3 +57,22 @@ resource "aws_lb_listener" "app_lb_listener" {
   }
 }
 
+resource "aws_lb_listener" "app_lb_http_listener" {
+  load_balancer_arn = aws_lb.app_alb.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.app_tg.arn
+  }
+  # FIXME:
+  # 本番運用とかでは443にリダイレクトするべき
+  # default_action {
+  #   type = "redirect"
+  #   redirect {
+  #     port        = "443"
+  #     protocol    = "HTTPS"
+  #     status_code = "HTTP_301"
+  # }
+}
