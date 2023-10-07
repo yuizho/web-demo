@@ -5,10 +5,7 @@ resource "aws_lb" "app_alb" {
   idle_timeout               = 60
   enable_deletion_protection = false
 
-  subnets = [
-    aws_subnet.app_subnet_public[0].id,
-    aws_subnet.app_subnet_public[1].id,
-  ]
+  subnets = [ for value in var.public_subnets : aws_subnet.app_subnet_public[value.az].id ]
 
   security_groups = [
     module.alb_sg.security_group_id
@@ -41,10 +38,10 @@ resource "aws_lb_target_group" "app_tg" {
   depends_on = [aws_lb.app_alb]
 }
 
-resource "aws_lb_target_group_attachment" "app_tg_attachment_0" {
-  count = 4
+resource "aws_lb_target_group_attachment" "app_tg_attachment" {
+  for_each = { for i in var.instances : i.name => i }
   target_group_arn = aws_lb_target_group.app_tg.arn
-  target_id        = aws_instance.app_server_ec2[count.index].id
+  target_id        = aws_instance.app_server_ec2[each.value.name].id
 }
 
 resource "aws_lb_listener" "app_lb_listener" {

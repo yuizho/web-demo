@@ -4,7 +4,7 @@ resource "aws_key_pair" "app_server_ssh_public_key" {
 }
 
 resource "aws_instance" "app_server_ec2" {
-  count = 4
+  for_each = { for i in var.instances : i.name => i }
 
   ami           = var.instance_ami
   instance_type = var.instance_type
@@ -13,13 +13,13 @@ resource "aws_instance" "app_server_ec2" {
     module.ssh_sg.security_group_id,
     module.tomcat_internal_sg.security_group_id
   ]
-  subnet_id = aws_subnet.app_subnet_public[count.index % 2 == 0 ? 0 : 1].id
+  subnet_id = aws_subnet.app_subnet_public[each.value.subnet].id
 
   user_data = <<-EOF
     #!/bin/bash
   EOF
 
   tags = {
-    Name = "app-server-${count.index}"
+    Name = each.value.name
   }
 }

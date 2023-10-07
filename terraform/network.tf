@@ -6,11 +6,11 @@ resource "aws_vpc" "app_vpc" {
 }
 
 resource "aws_subnet" "app_subnet_public" {
-  count = 2
+  for_each = { for i in var.public_subnets : i.az => i }
   vpc_id                  = aws_vpc.app_vpc.id
-  cidr_block              = "10.0.1${count.index}.0/24"
+  cidr_block              = each.value.cidr
   map_public_ip_on_launch = true
-  availability_zone       = "ap-northeast-1${count.index % 2 == 0 ? "a" : "c"}"
+  availability_zone       = each.value.az
 }
 
 # インターネットゲートウェイ
@@ -30,8 +30,8 @@ resource "aws_route" "app_route_public" {
 }
 
 resource "aws_route_table_association" "app_route_table_association_public" {
-  count = 2
-  subnet_id      = aws_subnet.app_subnet_public[count.index].id
+  for_each = { for i in var.public_subnets : i.az => i }
+  subnet_id      = aws_subnet.app_subnet_public[each.value.az].id
   route_table_id = aws_route_table.app_route_table_public.id
 }
 
