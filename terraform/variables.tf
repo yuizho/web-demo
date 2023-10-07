@@ -56,3 +56,8 @@ variable "public_subnets" {
     }
   ]
 }
+
+# route53
+variable "domain" {
+  type = string
+}
