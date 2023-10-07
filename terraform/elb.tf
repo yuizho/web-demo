@@ -1,0 +1,81 @@
+resource "aws_lb" "app_alb" {
+  name                       = "app-alb"
+  load_balancer_type         = "application"
+  internal                   = false
+  idle_timeout               = 60
+  # FIXME:
+  # ご操作によるALB削除防止のため、本番運用ではtrueにするのが良いと思う
+  # destroy前にfalseにする必要があるので、ガシガシdestroyする場合はfalseが良いと思う
+  enable_deletion_protection = false
+
+  subnets = [ for value in var.public_subnets : aws_subnet.app_subnet_public[value.az].id ]
+
+  security_groups = [
+    module.alb_sg.security_group_id
+  ]
+}
+
+output "alb_dns_name" {
+  value = aws_lb.app_alb.dns_name
+}
+
+resource "aws_lb_target_group" "app_tg" {
+  name                 = "app-tg"
+  vpc_id               = aws_vpc.app_vpc.id
+  target_type          = "instance"
+  port                 = 8080
+  protocol             = "HTTP"
+  deregistration_delay = 300
+
+  health_check {
+    path                = "/actuator/health"
+    healthy_threshold   = 5
+    unhealthy_threshold = 2
+    timeout             = 5
+    interval            = 30
+    matcher             = 200
+    port                = "traffic-port"
+    protocol            = "HTTP"
+  }
+
+  depends_on = [aws_lb.app_alb]
+}
+
+resource "aws_lb_target_group_attachment" "app_tg_attachment" {
+  for_each = { for i in var.instances : i.name => i }
+  target_group_arn = aws_lb_target_group.app_tg.arn
+  target_id        = aws_instance.app_server_ec2[each.value.name].id
+}
+
+resource "aws_lb_listener" "app_lb_listener" {
+  load_balancer_arn = aws_lb.app_alb.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+  certificate_arn   = data.aws_acm_certificate.app_acm_certificate.arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.app_tg.arn
+  }
+}
+
+resource "aws_lb_listener" "app_lb_http_listener" {
+  load_balancer_arn = aws_lb.app_alb.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.app_tg.arn
+  }
+  # FIXME:
+  # 本番運用とかでは443にリダイレクトするべき
+  # default_action {
+  #   type = "redirect"
+  #   redirect {
+  #     port        = "443"
+  #     protocol    = "HTTPS"
+  #     status_code = "HTTP_301"
+  # }
+}
