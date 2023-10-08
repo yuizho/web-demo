@@ -10,6 +10,11 @@ resource "aws_lb" "app_alb" {
 
   subnets = [ for value in var.public_subnets : aws_subnet.app_subnet_public[value.az].id ]
 
+  access_logs {
+    bucket = aws_s3_bucket.app_alb_log.id
+    enabled = true
+  }
+
   security_groups = [
     module.alb_sg.security_group_id
   ]
