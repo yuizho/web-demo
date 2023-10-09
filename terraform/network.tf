@@ -110,3 +110,29 @@ resource "aws_vpc_endpoint" "ec2messages" {
     module.vpc_endpoint_for_ssm_sg.security_group_id
   ]
 }
+
+data "aws_iam_policy_document" "vpc_endpoint_for_s3" {
+  statement {
+    effect    = "Allow"
+    resources = ["*"]
+
+    actions   = [
+      "s3:GetObject"
+    ]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+  }
+}
+
+resource "aws_vpc_endpoint" "s3" {
+  vpc_endpoint_type = "Gateway"
+  vpc_id            = aws_vpc.app_vpc.id
+  service_name      = "com.amazonaws.ap-northeast-1.s3"
+  policy = data.aws_iam_policy_document.vpc_endpoint_for_s3.json
+  route_table_ids = [
+    aws_route_table.app_route_table_private.id
+  ]
+}
