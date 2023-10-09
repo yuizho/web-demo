@@ -54,10 +54,10 @@ resource "aws_lb_target_group_attachment" "app_tg_attachment" {
 
 resource "aws_lb_listener" "app_lb_listener" {
   load_balancer_arn = aws_lb.app_alb.arn
-  port              = 443
-  protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
-  certificate_arn   = data.aws_acm_certificate.app_acm_certificate.arn
+  port              = anytrue(data.aws_acm_certificate.app_acm_certificate) ? 443 : 80
+  protocol          = anytrue(data.aws_acm_certificate.app_acm_certificate) ? "HTTPS" : "HTTP"
+  ssl_policy        = anytrue(data.aws_acm_certificate.app_acm_certificate) ? "ELBSecurityPolicy-TLS13-1-2-2021-06" : null
+  certificate_arn   = one(data.aws_acm_certificate.app_acm_certificate[*].arn)
 
   default_action {
     type             = "forward"

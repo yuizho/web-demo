@@ -1,10 +1,14 @@
 resource "aws_route53_zone" "app_route53_zone" {
+  count = var.domain != null ? 1 : 0
+
   name = var.domain
 }
 
 resource "aws_route53_record" "app_route53_record" {
-  zone_id = aws_route53_zone.app_route53_zone.zone_id
-  name    = aws_route53_zone.app_route53_zone.name
+  count = var.domain != null ? 1 : 0
+
+  zone_id = aws_route53_zone.app_route53_zone[0].zone_id
+  name    = aws_route53_zone.app_route53_zone[0].name
   type    = "A"
 
   alias {

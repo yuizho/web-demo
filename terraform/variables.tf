@@ -77,4 +77,5 @@ variable "private_subnets" {
 # route53
 variable "domain" {
   type = string
+  default = null
 }

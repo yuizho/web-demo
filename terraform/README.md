@@ -4,7 +4,9 @@
 ### apply trraform configs to aws
 ```
 $ cd terraform
-$ terraform init
+$ terraform domain
+
+# domain variable is optional
 $ terraform plan -var 'domain=<your_domain>'
 $ terraform apply -var 'domain=<your_domain>'
 ```
