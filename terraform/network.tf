@@ -36,14 +36,6 @@ resource "aws_route_table_association" "app_route_table_association_public" {
 }
 
 # セキュリティグループ
-module "ssh_sg" {
-  source      = "./security_group"
-  name        = "ssh-sg"
-  vpc_id      = aws_vpc.app_vpc.id
-  ports       = [22]
-  cidr_blocks = ["0.0.0.0/0"]
-}
-
 module "tomcat_internal_sg" {
   source      = "./security_group"
   name        = "tomcat-internal-sg"

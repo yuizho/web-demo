@@ -6,7 +6,6 @@ resource "aws_instance" "app_server_ec2" {
   instance_type = var.instance_type
   iam_instance_profile = aws_iam_instance_profile.ec2_for_ssm.name
   vpc_security_group_ids = [
-    module.ssh_sg.security_group_id,
     module.tomcat_internal_sg.security_group_id
   ]
   subnet_id = aws_subnet.app_subnet_public[each.value.subnet].id
