@@ -57,6 +57,23 @@ variable "public_subnets" {
   ]
 }
 
+variable "private_subnets" {
+  type = list(object({
+    az = string
+    cidr = string
+  }))
+  default = [
+    {
+      az = "ap-northeast-1a",
+      cidr = "10.0.20.0/24"
+    },
+    {
+      az = "ap-northeast-1c",
+      cidr = "10.0.21.0/24"
+    }
+  ]
+}
+
 # route53
 variable "domain" {
   type = string

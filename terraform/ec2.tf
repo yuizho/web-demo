@@ -8,7 +8,7 @@ resource "aws_instance" "app_server_ec2" {
   vpc_security_group_ids = [
     module.tomcat_internal_sg.security_group_id
   ]
-  subnet_id = aws_subnet.app_subnet_public[each.value.subnet].id
+  subnet_id = aws_subnet.app_subnet_private[each.value.subnet].id
 
   user_data = <<-EOF
     #!/bin/bash
@@ -31,8 +31,6 @@ data "aws_iam_policy_document" "ec2_for_ssm" {
       "s3:PutObject",
       "logs:PutLogEvents",
       "logs:CreateLogStream",
-      "ssm:GetParameter",
-      "ssm:GetParameters",
       "ssm:GetParametersByPath",
       "kms:Decrypt",
     ]

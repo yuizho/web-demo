@@ -13,6 +13,13 @@ resource "aws_subnet" "app_subnet_public" {
   availability_zone       = each.value.az
 }
 
+resource "aws_subnet" "app_subnet_private" {
+  for_each = { for i in var.private_subnets : i.az => i }
+  vpc_id                  = aws_vpc.app_vpc.id
+  cidr_block              = each.value.cidr
+  availability_zone       = each.value.az
+}
+
 # インターネットゲートウェイ
 resource "aws_internet_gateway" "app_ig" {
  vpc_id = aws_vpc.app_vpc.id
@@ -29,10 +36,20 @@ resource "aws_route" "app_route_public" {
   destination_cidr_block = "0.0.0.0/0"
 }
 
+resource "aws_route_table" "app_route_table_private" {
+  vpc_id = aws_vpc.app_vpc.id
+}
+
 resource "aws_route_table_association" "app_route_table_association_public" {
   for_each = { for i in var.public_subnets : i.az => i }
   subnet_id      = aws_subnet.app_subnet_public[each.value.az].id
   route_table_id = aws_route_table.app_route_table_public.id
+}
+
+resource "aws_route_table_association" "app_route_table_association_private" {
+  for_each = { for i in var.private_subnets : i.az => i }
+  subnet_id      = aws_subnet.app_subnet_private[each.value.az].id
+  route_table_id = aws_route_table.app_route_table_private.id
 }
 
 # セキュリティグループ
@@ -50,4 +67,46 @@ module "alb_sg" {
   vpc_id      = aws_vpc.app_vpc.id
   ports       = [80, 443]
   cidr_blocks = ["0.0.0.0/0"]
+}
+
+module "vpc_endpoint_for_ssm_sg" {
+  source      = "./security_group"
+  name        = "vpc-endpoint-for-ssm-sg"
+  vpc_id      = aws_vpc.app_vpc.id
+  ports       = [443]
+  cidr_blocks = [aws_vpc.app_vpc.cidr_block]
+}
+
+# VPC Endpoint
+resource "aws_vpc_endpoint" "ssm" {
+  vpc_endpoint_type = "Interface"
+  vpc_id            = aws_vpc.app_vpc.id
+  service_name      = "com.amazonaws.ap-northeast-1.ssm"
+  subnet_ids = [ for i in aws_subnet.app_subnet_private : i.id ]
+  private_dns_enabled = true
+  security_group_ids = [
+    module.vpc_endpoint_for_ssm_sg.security_group_id
+  ]
+}
+
+resource "aws_vpc_endpoint" "ssmmessages" {
+  vpc_endpoint_type = "Interface"
+  vpc_id            = aws_vpc.app_vpc.id
+  service_name      = "com.amazonaws.ap-northeast-1.ssmmessages"
+  subnet_ids = [ for i in aws_subnet.app_subnet_private : i.id ]
+  private_dns_enabled = true
+  security_group_ids = [
+    module.vpc_endpoint_for_ssm_sg.security_group_id
+  ]
+}
+
+resource "aws_vpc_endpoint" "ec2messages" {
+  vpc_endpoint_type = "Interface"
+  vpc_id            = aws_vpc.app_vpc.id
+  service_name      = "com.amazonaws.ap-northeast-1.ec2messages"
+  subnet_ids = [ for i in aws_subnet.app_subnet_private : i.id ]
+  private_dns_enabled = true
+  security_group_ids = [
+    module.vpc_endpoint_for_ssm_sg.security_group_id
+  ]
 }
