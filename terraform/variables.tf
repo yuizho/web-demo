@@ -29,11 +29,11 @@ variable instances {
       subnet = "ap-northeast-1c"
     },
     {
-      name = "app-server-3",
+      name = "app-server-2",
       subnet = "ap-northeast-1a"
     },
     {
-      name = "app-server-4",
+      name = "app-server-3",
       subnet = "ap-northeast-1c"
     },
   ]
