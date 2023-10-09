@@ -77,6 +77,14 @@ module "vpc_endpoint_for_ssm_sg" {
   cidr_blocks = [aws_vpc.app_vpc.cidr_block]
 }
 
+module "vpc_endpoint_for_cloudwatch_logs_sg" {
+  source      = "./security_group"
+  name        = "vpc-endpoint-for-cloudwatch-logs-sg"
+  vpc_id      = aws_vpc.app_vpc.id
+  ports       = [443]
+  cidr_blocks = [aws_vpc.app_vpc.cidr_block]
+}
+
 # VPC Endpoint
 resource "aws_vpc_endpoint" "ssm" {
   vpc_endpoint_type = "Interface"
@@ -108,6 +116,17 @@ resource "aws_vpc_endpoint" "ec2messages" {
   private_dns_enabled = true
   security_group_ids = [
     module.vpc_endpoint_for_ssm_sg.security_group_id
+  ]
+}
+
+resource "aws_vpc_endpoint" "cloudwatch_logs" {
+  vpc_endpoint_type = "Interface"
+  vpc_id            = aws_vpc.app_vpc.id
+  service_name      = "com.amazonaws.ap-northeast-1.logs"
+  subnet_ids = [ for i in aws_subnet.app_subnet_private : i.id ]
+  private_dns_enabled = true
+  security_group_ids = [
+    module.vpc_endpoint_for_cloudwatch_logs_sg.security_group_id
   ]
 }
 
