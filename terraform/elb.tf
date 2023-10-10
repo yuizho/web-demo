@@ -66,21 +66,20 @@ resource "aws_lb_listener" "app_lb_listener" {
 }
 
 resource "aws_lb_listener" "app_lb_http_listener" {
+  # domainの設定があり、ACMの設定などが有効になるケースのみ
+  # HTTPのHTTPSへのリダイレクト設定を入れる
+  count = var.domain != null ? 1 : 0
+
   load_balancer_arn = aws_lb.app_alb.arn
   port              = 80
   protocol          = "HTTP"
 
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.app_tg.arn
+    type = "redirect"
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
   }
-  # FIXME:
-  # 本番運用とかでは443にリダイレクトするべき
-  # default_action {
-  #   type = "redirect"
-  #   redirect {
-  #     port        = "443"
-  #     protocol    = "HTTPS"
-  #     status_code = "HTTP_301"
-  # }
 }
