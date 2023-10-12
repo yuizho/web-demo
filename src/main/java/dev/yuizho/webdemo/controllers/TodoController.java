@@ -29,6 +29,7 @@ public class TodoController {
         LOGGER.info(todo);
         todoList.add(todo);
         model.addAttribute("todoList", todoList);
+        model.addAttribute("form", "");
         return "todo/todolist";
     }
 }

@@ -6,15 +6,6 @@
     <script th:src="@{/webjars/htmx.org/1.9.6/dist/htmx.min.js}"></script>
 </head>
 <body>
-<div>
-    <input
-            type="text"
-            name="todo"
-            th:hx-post="@{/todo/register}"
-            hx-trigger="keyup[keyCode==13]"
-            hx-target="#todo-list"
-    />
-    <div id="todo-list" th:insert="~{/todo/todolist :: todo-list}"></div>
-</div>
+<div id="todo-list" th:replace="~{/todo/todolist :: todo-list}"></div>
 </body>
 </html>

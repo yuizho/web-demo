@@ -1,3 +1,13 @@
-<ul th:each="todo : ${todoList}" th:fragment="todo-list">
-    <li th:text="${todo}">hoge</li>
-</ul>
+<div id="todo-list" th:fragment="todo-list">
+    <input
+            type="text"
+            name="todo"
+            th:hx-post="@{/todo/register}"
+            hx-trigger="keyup[keyCode==13]"
+            hx-target="#todo-list"
+            th:value="${form}"
+    />
+    <ul th:each="todo : ${todoList}">
+        <li th:text="${todo}">hoge</li>
+    </ul>
+</div>
