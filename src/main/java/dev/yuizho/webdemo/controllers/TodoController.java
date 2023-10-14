@@ -1,6 +1,6 @@
 package dev.yuizho.webdemo.controllers;
 
-import dev.yuizho.webdemo.repositories.TodoRepository;
+import dev.yuizho.webdemo.model.TodoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
