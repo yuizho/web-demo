@@ -8,6 +8,6 @@
             th:value="${form}"
     />
     <ul th:each="todo : ${todoList}">
-        <li th:text="${todo}">hoge</li>
+        <li th:text="${todo.name()}">hoge</li>
     </ul>
 </div>

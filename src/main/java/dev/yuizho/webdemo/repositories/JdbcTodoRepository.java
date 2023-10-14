@@ -1,7 +1,9 @@
 package dev.yuizho.webdemo.repositories;
 
+import dev.yuizho.webdemo.model.Todo;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.DataClassRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,11 +17,14 @@ public class TodoRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<String> findAll() {
+    public List<Todo> findAll() {
         var sql = """
                 SELECT name FROM todo
                 """;
-        return jdbcTemplate.queryForList(sql, Map.of(), String.class);
+        return jdbcTemplate.query(
+                sql,
+                new DataClassRowMapper<>(Todo.class)
+        );
     }
 
     public int save(String name) {
