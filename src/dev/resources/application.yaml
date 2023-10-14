@@ -1,7 +1,0 @@
-# doesn't need configurations of db connection
-# because spring-boot-docker-compose configures them.
-# https://zenn.dev/backpaper0/articles/c9d6e3c54e783e
-spring:
-  sql:
-    init:
-      mode: always
