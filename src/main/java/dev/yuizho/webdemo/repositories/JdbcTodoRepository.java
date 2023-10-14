@@ -20,7 +20,7 @@ public class JdbcTodoRepository implements TodoRepository {
     @Override
     public List<Todo> findAll() {
         var sql = """
-                SELECT name FROM todo
+                SELECT id, name FROM todo
                 """;
         return jdbcTemplate.query(
                 sql,
@@ -34,5 +34,13 @@ public class JdbcTodoRepository implements TodoRepository {
                 INSERT INTO todo(name) VALUES(:name)
                 """;
         return jdbcTemplate.update(sql, Map.of("name", name));
+    }
+
+    @Override
+    public int delete(int id) {
+        var sql = """
+                DELETE FROM todo WHERE id = :id
+                """;
+        return jdbcTemplate.update(sql, Map.of("id", id));
     }
 }

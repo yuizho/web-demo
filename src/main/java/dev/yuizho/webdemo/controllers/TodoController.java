@@ -41,4 +41,16 @@ public class TodoController {
         model.addAttribute("form", "");
         return "todo/todolist";
     }
+
+    @PostMapping("/delete")
+    public String register(Model model, int id) {
+        LOGGER.info("id:{}", id);
+        todoRepository.delete(id);
+
+        model.addAttribute(
+                "todoList",
+                todoRepository.findAll()
+        );
+        return "todo/todolist";
+    }
 }

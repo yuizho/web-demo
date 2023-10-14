@@ -1,4 +1,4 @@
 package dev.yuizho.webdemo.model;
 
-public record Todo(String name) {
+public record Todo(int id, String name) {
 }
