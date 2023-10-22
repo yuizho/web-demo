@@ -1,12 +1,32 @@
 version: 0.2
 
+env:
+  variables:
+    CONTAINER_NAME: "web-demo-ecs"
+
 phases:
+  pre_build:
+    commands:
+      # AWS アカウント ID を取得する
+      - AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
+      # リポジトリの URI を設定する
+      - REPOSITORY_URI=${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/${CONTAINER_NAME}
+      # ECR にログインする
+      - aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com
+
   build:
     commands:
-      - ./mvnw clean package
+      - ./mvnw clean spring-boot:build-image
+      - IMAGE_TAG=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)
+      - docker tag web-demo:${IMAGE_TAG} ${REPOSITORY_URI}:${IMAGE_TAG}
+
+  post_build:
+    commands:
+      # ビルドしたコンテナイメージを ECR にプッシュする
+      - docker push ${REPOSITORY_URI}:${IMAGE_TAG}
+      # "コンテナの名前" と "コンテナイメージの URI" を imagedefinitions.json に書き込む
+      - printf '[{"name":"%s","imageUri":"%s"}]' ${CONTAINER_NAME} ${REPOSITORY_URI}:${IMAGE_TAG}  > imagedefinitions.json
+
 artifacts:
   files:
-    - target/web-demo-0.0.1-SNAPSHOT.jar
-    - appspec.yml
-    - tomcat_restart.sh
-  discard-paths: yes
+    - imagedefinitions.json
