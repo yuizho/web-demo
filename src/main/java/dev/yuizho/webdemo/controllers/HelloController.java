@@ -10,6 +10,6 @@ import java.net.UnknownHostException;
 public class HelloController {
     @RequestMapping("hello")
     public String hello() throws UnknownHostException {
-        return "Hello!! I'm working on " + InetAddress.getLocalHost().getHostName() + "!!!!\n";
+        return "Hello!! I'm working on " + InetAddress.getLocalHost().getHostName() + "!!!! Powered by ECS!!\n";
     }
 }
