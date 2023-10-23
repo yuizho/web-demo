@@ -1,0 +1,24 @@
+<div id="todo-list" th:fragment="todo-list" style="display: flex; flex-direction: column; row-gap: 2em;">
+    <input
+            type="text"
+            name="todo"
+            th:hx-post="@{/todo/register}"
+            hx-trigger="keyup[keyCode==13]"
+            hx-target="#todo-list"
+            th:value="${form}"
+    />
+
+    <div style="display: flex; flex-direction: column; row-gap: 1em;">
+        <div th:each="todo : ${todoList}" style="display: flex; flex-direction: row; justify-content: start;">
+            <div th:text="${todo.name()}" style="flex-basis: 80%;"></div>
+            <input type="hidden" th:id="'todo-' + ${todo.id()}" name="id" th:value="${todo.id()}">
+            <button
+                    th:hx-post="@{/todo/delete}"
+                    th:hx-include="'#todo-' + ${todo.id()}"
+                    hx-target="#todo-list"
+                    style="flex-basis: 20%">
+                delete
+            </button>
+        </div>
+    </div>
+</div>
