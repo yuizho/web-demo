@@ -2,8 +2,8 @@ version: 0.2
 
 env:
   variables:
-    - REPOSITORY_NAME: "web-demo-ecs"
-    - CONTAINER_NAME: "web-demo"
+    REPOSITORY_NAME: "web-demo-ecs"
+    CONTAINER_NAME: "web-demo"
 
 phases:
   pre_build:
