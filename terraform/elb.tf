@@ -27,7 +27,7 @@ output "alb_dns_name" {
 resource "aws_lb_target_group" "app_tg" {
   name                 = "app-tg"
   vpc_id               = aws_vpc.app_vpc.id
-  target_type          = "instance"
+  target_type          = "ip"
   port                 = 8080
   protocol             = "HTTP"
   deregistration_delay = 300
@@ -44,12 +44,6 @@ resource "aws_lb_target_group" "app_tg" {
   }
 
   depends_on = [aws_lb.app_alb]
-}
-
-resource "aws_lb_target_group_attachment" "app_tg_attachment" {
-  for_each = { for i in var.instances : i.name => i }
-  target_group_arn = aws_lb_target_group.app_tg.arn
-  target_id        = aws_instance.app_server_ec2[each.value.name].id
 }
 
 resource "aws_lb_listener" "app_lb_listener" {

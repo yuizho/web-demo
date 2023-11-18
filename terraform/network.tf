@@ -77,9 +77,9 @@ module "vpc_endpoint_for_ssm_sg" {
   cidr_blocks = [aws_vpc.app_vpc.cidr_block]
 }
 
-module "vpc_endpoint_for_cloudwatch_logs_sg" {
+module "vpc_endpoint_sg" {
   source      = "./security_group"
-  name        = "vpc-endpoint-for-cloudwatch-logs-sg"
+  name        = "vpc-endpoint-sg"
   vpc_id      = aws_vpc.app_vpc.id
   ports       = [443]
   cidr_blocks = [aws_vpc.app_vpc.cidr_block]
@@ -126,7 +126,29 @@ resource "aws_vpc_endpoint" "cloudwatch_logs" {
   subnet_ids = [ for i in aws_subnet.app_subnet_private : i.id ]
   private_dns_enabled = true
   security_group_ids = [
-    module.vpc_endpoint_for_cloudwatch_logs_sg.security_group_id
+    module.vpc_endpoint_sg.security_group_id
+  ]
+}
+
+resource "aws_vpc_endpoint" "ecr_api" {
+  vpc_endpoint_type = "Interface"
+  vpc_id            = aws_vpc.app_vpc.id
+  service_name      = "com.amazonaws.ap-northeast-1.ecr.api"
+  subnet_ids = [ for i in aws_subnet.app_subnet_private : i.id ]
+  private_dns_enabled = true
+  security_group_ids = [
+    module.vpc_endpoint_sg.security_group_id
+  ]
+}
+
+resource "aws_vpc_endpoint" "ecr_dkr" {
+  vpc_endpoint_type = "Interface"
+  vpc_id            = aws_vpc.app_vpc.id
+  service_name      = "com.amazonaws.ap-northeast-1.ecr.dkr"
+  subnet_ids = [ for i in aws_subnet.app_subnet_private : i.id ]
+  private_dns_enabled = true
+  security_group_ids = [
+    module.vpc_endpoint_sg.security_group_id
   ]
 }
 
