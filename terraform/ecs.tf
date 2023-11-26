@@ -3,44 +3,15 @@ resource "aws_ecs_cluster" "app_ecs_cluster" {
   name = "app"
 }
 
-resource "aws_ecs_task_definition" "app_ecs_task_definition" {
-  family                   = "app"
-  cpu                      = "256"
-  memory                   = "512"
-  network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
-  container_definitions    = file("./container_definitions.json")
-  execution_role_arn       = module.ecs_task_execution_role.iam_role_arn
-}
-
-resource "aws_ecs_service" "app_ecs_service" {
-   name                              = "app-ecs-service"
-   cluster                           = aws_ecs_cluster.app_ecs_cluster.arn
-   task_definition                   = aws_ecs_task_definition.app_ecs_task_definition.arn
-   desired_count                     = 2
-   launch_type                       = "FARGATE"
-   platform_version                  = "1.4.0"
-   health_check_grace_period_seconds = 60
-
-   network_configuration {
-     assign_public_ip = false
-     security_groups  = [module.tomcat_internal_sg.security_group_id]
-
-    subnets = [
-      aws_subnet.app_subnet_private["ap-northeast-1a"].id,
-      aws_subnet.app_subnet_private["ap-northeast-1c"].id
-    ]
-  }
-
-  load_balancer {
-    target_group_arn = aws_lb_target_group.app_tg.arn
-    container_name   = "app-container"
-    container_port   = 8080
-  }
-
-  lifecycle {
-    ignore_changes = [task_definition]
-  }
+resource "aws_appautoscaling_target" "app_autoscaling_target" {
+  max_capacity       = 10
+  min_capacity       = 1
+  resource_id        = "service/${aws_ecs_cluster.app_ecs_cluster.name}/app-ecs-service"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+  depends_on = [
+    terraform_data.ecspresso
+  ]
 }
 
 resource "aws_cloudwatch_log_group" "for_ecs" {

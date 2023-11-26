@@ -19,7 +19,7 @@
     {
       "containerName": "app-container",
       "containerPort": 8080,
-      "targetGroupArn": "{{ tfstate `aws_lb_target_group.app_tg.arn` }}"
+        "targetGroupArn": "{{or (env `TARGET_GROUP_ARN` ``) (tfstate `aws_lb_target_group.app_tg.arn`)}}"
     }
   ],
   "networkConfiguration": {

@@ -79,3 +79,9 @@ variable "domain" {
   type = string
   default = null
 }
+
+# ecs
+variable "image_tag" {
+  type = string
+  default = "330361183183.dkr.ecr.ap-northeast-1.amazonaws.com/web-demo-ecs:0.0.1-SNAPSHOT"
+}
