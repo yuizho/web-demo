@@ -10,3 +10,8 @@ $ terraform domain
 $ terraform plan -var 'domain=<your_domain>'
 $ terraform apply -var 'domain=<your_domain>'
 ```
+
+### deploy ecs containers by ecspresso
+```
+$ IMAGE_TAG='xxxx.dkr.ecr.ap-northeast-1.amazonaws.com/web-demo-ecs:0.0.1-SNAPSHOT' ecspresso deploy
+```
