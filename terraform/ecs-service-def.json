@@ -1,0 +1,41 @@
+{
+  "deploymentConfiguration": {
+    "deploymentCircuitBreaker": {
+      "enable": false,
+      "rollback": false
+    },
+    "maximumPercent": 200,
+    "minimumHealthyPercent": 100
+  },
+  "deploymentController": {
+    "type": "ECS"
+  },
+  "desiredCount": 2,
+  "enableECSManagedTags": false,
+  "enableExecuteCommand": false,
+  "healthCheckGracePeriodSeconds": 60,
+  "launchType": "FARGATE",
+  "loadBalancers": [
+    {
+      "containerName": "app-container",
+      "containerPort": 8080,
+        "targetGroupArn": "{{or (env `TARGET_GROUP_ARN` ``) (tfstate `aws_lb_target_group.app_tg.arn`)}}"
+    }
+  ],
+  "networkConfiguration": {
+    "awsvpcConfiguration": {
+      "assignPublicIp": "DISABLED",
+      "securityGroups": [
+        "{{ tfstate `module.tomcat_internal_sg.aws_security_group.default.id` }}"
+      ],
+      "subnets": [
+        "{{ tfstate `aws_subnet.app_subnet_private['ap-northeast-1a'].id` }}",
+        "{{ tfstate `aws_subnet.app_subnet_private['ap-northeast-1c'].id` }}"
+      ]
+    }
+  },
+  "platformFamily": "Linux",
+  "platformVersion": "1.4.0",
+  "propagateTags": "NONE",
+  "schedulingStrategy": "REPLICA"
+}
